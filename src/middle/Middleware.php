@@ -121,6 +121,7 @@ class Middleware implements MiddlewareInterface
             $this->add('beginMiddleware',$middle);
             return;
         }
+        if(empty($this->beginMiddleware))return;
         return call_user_func(array_reduce($this->beginMiddleware,$this->exec()));
 }
 
@@ -130,6 +131,7 @@ class Middleware implements MiddlewareInterface
             $this->add('appMiddleware',$middle);
             return;
         }
+        if(empty($this->appMiddleware))return;
         return call_user_func(array_reduce($this->appMiddleware,$this->exec()));
     }
 
@@ -139,6 +141,7 @@ class Middleware implements MiddlewareInterface
             $this->add('modelMiddleware',$middle);
             return;
         }
+        if(empty($this->modelMiddleware))return;
         return call_user_func(array_reduce($this->modelMiddleware,$this->exec()));
     }
 
@@ -148,6 +151,7 @@ class Middleware implements MiddlewareInterface
             $this->add('controllerMiddleware',$middle);
             return;
         }
+        if(empty($this->controllerMiddleware))return;
         return call_user_func(array_reduce($this->controllerMiddleware,$this->exec()));
     }
 
@@ -157,6 +161,7 @@ class Middleware implements MiddlewareInterface
             $this->add('actionMiddleware',$middle);
             return;
         }
+        if(empty($this->actionMiddleware))return;
         return call_user_func(array_reduce($this->actionMiddleware,$this->exec()));
     }
 
@@ -166,6 +171,7 @@ class Middleware implements MiddlewareInterface
             $this->add('destructMiddleware',$middle);
             return;
         }
+        if(empty($this->destructMiddleware))return;
         return call_user_func(array_reduce($this->destructMiddleware,$this->exec()));
     }
 
