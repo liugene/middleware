@@ -14,7 +14,7 @@
 
 namespace linkphp\middleware\middle;
 
-use linkphp\boot\Exception;
+use linkphp\Exception;
 use linkphp\interfaces\MiddlewareInterface;
 use Closure;
 
