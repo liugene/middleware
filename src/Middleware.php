@@ -9,35 +9,138 @@
 // +----------------------------------------------------------------------
 // | Author: liugene <liujun2199@vip.qq.com>
 // +----------------------------------------------------------------------
-// |               中间件
+// |               配置类
 // +----------------------------------------------------------------------
 
 namespace linkphp\middleware;
 
-use linkphp\middleware\middle\Middleware as Middle;
+use framework\Exception;
+use framework\interfaces\MiddlewareInterface;
+use Closure;
 
-class Middleware
+class Middleware implements MiddlewareInterface
 {
 
-    static private $_instance;
+    protected $beginMiddleware = [];
 
-    static private function middleware()
+    protected $appMiddleware = [];
+
+    protected $modelMiddleware = [];
+
+    protected $controllerMiddleware = [];
+
+    protected $actionMiddleware = [];
+
+    protected $destructMiddleware = [];
+
+    private $validateMiddle = [
+        'beginMiddleware',
+        'appMiddleware',
+        'modelMiddleware',
+        'controllerMiddleware',
+        'actionMiddleware',
+        'destructMiddleware'
+    ]; 
+
+    public function import($middle)
     {
-        if (!isset(self::$_instance)) {
-            self::$_instance = new Middle();
+        if(is_array($middle)){
+            foreach($middle as $tag => $handle){
+                if(empty($handle)){
+                    break;
+                }
+                if($this->isValidate($tag)){
+                    $this->add($tag,$handle);
+                } else {
+                    throw new Exception('不是合法的中间件');
+                }
+            }
         }
-
-        return self::$_instance;
+        return $this;
     }
 
-    static public function __callStatic($method,$param)
+    public function add($tag,$handle)
     {
-        return call_user_func_array([self::middleware(), $method], $param);
+        if($handle instanceof Closure){
+            $handleClosure[] = $handle;
+            $this->$tag = array_merge($this->$tag,$handleClosure);
+            return;
+        }
+        $this->$tag = array_merge($this->$tag,$handle);
     }
 
-    public function __call($name, $arguments)
+    public function isValidate($middle)
     {
-        return call_user_func_array([self::middleware(), $name], $arguments);
+        return in_array($middle,$this->validateMiddle);
+    }
+
+    public function beginMiddleware($middle=null)
+    {
+        if(!is_null($middle)){
+            $this->add('beginMiddleware',$middle);
+            return;
+        }
+        return $this->target('beginMiddleware');
+}
+
+    public function appMiddleware($middle=null)
+    {
+        if(!is_null($middle)){
+            $this->add('appMiddleware',$middle);
+            return;
+        }
+        return $this->target('appMiddleware');
+    }
+
+    public function modelMiddleware($middle=null)
+    {
+        if(!is_null($middle)){
+            $this->add('modelMiddleware',$middle);
+            return;
+        }
+        return $this->target('modelMiddleware');
+    }
+
+    public function controllerMiddleware($middle=null)
+    {
+        if(!is_null($middle)){
+            $this->add('controllerMiddleware',$middle);
+            return;
+        }
+        return $this->target('controllerMiddleware');
+    }
+
+    public function actionMiddleware($middle=null)
+    {
+        if(!is_null($middle)){
+            $this->add('actionMiddleware',$middle);
+            return;
+        }
+        return $this->target('actionMiddleware');
+    }
+
+    public function destructMiddleware($middle=null)
+    {
+        if(!is_null($middle)){
+            $this->add('destructMiddleware',$middle);
+            return;
+        }
+        return $this->target('destructMiddleware');
+    }
+
+    public function target($middle)
+    {
+        if($this->$middle){
+            array_walk_recursive($this->$middle,[$this, 'exec']);
+        }
+    }
+
+    public function exec($value,$key)
+    {
+        if($value instanceof Closure){
+            return call_user_func($value);
+        }
+        return call_user_func([new $value,'handle']);
     }
 
 }
