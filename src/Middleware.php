@@ -40,14 +40,14 @@ class Middleware implements MiddlewareInterface
         'controllerMiddleware',
         'actionMiddleware',
         'destructMiddleware'
-    ]; 
+    ];
 
     public function import($middle)
     {
         if(is_array($middle)){
             foreach($middle as $tag => $handle){
                 if(empty($handle)){
-                    break;
+                    continue;
                 }
                 if($this->isValidate($tag)){
                     $this->add($tag,$handle);
@@ -81,7 +81,7 @@ class Middleware implements MiddlewareInterface
             return;
         }
         return $this->target('beginMiddleware');
-}
+    }
 
     public function appMiddleware($middle=null)
     {
