@@ -14,7 +14,7 @@
   },
   "autoload": {
     "psr-4": {
-      "link\\middleware\\": "src"
+      "linkphp\\middleware\\": "src"
     }
   }
 }
